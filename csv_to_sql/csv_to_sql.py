@@ -8,6 +8,8 @@ from typing import Iterator
 ## IDEA: let the user choose the delimeter character for the csv files
 ## TODO: the arguments can not handle the db connection yet
 
+CsvReader = Iterator[list[str]]
+
 
 class Cli:
     r"""This `Cli` class means to act like an `namespace` in C, its only
@@ -59,7 +61,7 @@ def parse_arguments(args: list[str]) -> Namespace:
     return parser.parse_args(args)
 
 
-def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> Iterator[list[str]]:
+def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> CsvReader:
     r"""Try to open an `.csv` file, if this file doesn't exist or has an
     invalid path string, it will halt the whole program and show the error
     message with some additional information about that. If it doesn't halt, it
