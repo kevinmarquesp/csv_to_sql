@@ -51,7 +51,27 @@ def parse_arguments(args: list[str]) -> Namespace:
                             fills all rows with the file contents. Also, if\
                             you're using a PostgreSQL database, this command\
                             line tool allows you to connect to that database\
-                            and execute the generated SQL statement")
+                            and execute the generated SQL statement.")
+
+    parser.add_argument("--host", "-H", type=str, help="Host name of your\
+                        database server.")
+
+    parser.add_argument("--port", "-p", type=str, help="Port of the connection\
+                        of your database server.")
+
+    parser.add_argument("--user", "-u", type=str, help="User name to access\
+                        the database tables.")
+
+    parser.add_argument("--password", "-P", type=str, help="Passord of your\
+                        database user.")
+
+    parser.add_argument("--db-name", "-d", type=str, help="Wich database\
+                        this script should access once it's connected.")
+    
+    parser.add_argument("--print", action="store_true", help="if you\
+                        don't want to connect to any database server, this\
+                        option will make the code just print the SQL query on\
+                        the screen, then you do whatever you want with it.")
 
     parser.add_argument("csv_files", type=str, nargs="+", help="List of `.csv`\
                         files that you want to use to generate the SQL query.")
