@@ -1,4 +1,4 @@
-# Csv To SQL Script
+# CSV To SQL Script
 Script that reads a CSV file and constructs a SQL query string that inserts every row of this file into an SQL database -- you can also connect to an PostgreSQL database (by default) and actually run that generated insert command.
 
 I was studying SQL and I needed to pass an example CSV file to my database in order to do some operations and study the behavior of the SQL syntax, so I thought that it would be a really good quick project to rest a bit and let all this SQL stuff for later. Probably, this script isn't the best solution for that problem, so if you want a proper tool to do that, maybe you'll need to do a little research. But, by the way, if this little side project is useful to you, I would be happy.
