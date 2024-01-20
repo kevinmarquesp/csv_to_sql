@@ -193,7 +193,10 @@ def main(args: list[str]) -> None:
 
     for file_path in parsed_args.csv_files:
         query_string = get_query_string(file_path)
-        print(query_string)
+
+        if parsed_args.print:
+            print(query_string)
+            break
 
 
 if __name__ == "__main__":
