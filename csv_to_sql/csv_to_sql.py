@@ -53,25 +53,25 @@ def parse_arguments(args: list[str]) -> Namespace:
                             line tool allows you to connect to that database\
                             and execute the generated SQL statement.")
 
-    parser.add_argument("--host", "-H", type=str, help="Host name of your\
+    parser.add_argument("--host", "-H", type=str, help="Hostname of your\
                         database server.")
 
-    parser.add_argument("--port", "-p", type=str, help="Port of the connection\
-                        of your database server.")
+    parser.add_argument("--port", "-p", type=str, help="Port for the\
+                        connection to your database server.")
 
-    parser.add_argument("--user", "-u", type=str, help="User name to access\
+    parser.add_argument("--user", "-u", type=str, help="Username to access\
                         the database tables.")
 
-    parser.add_argument("--password", "-P", type=str, help="Passord of your\
+    parser.add_argument("--password", "-P", type=str, help="Password of your\
                         database user.")
 
-    parser.add_argument("--db-name", "-d", type=str, help="Wich database\
+    parser.add_argument("--db-name", "-d", type=str, help="The database\
                         this script should access once it's connected.")
     
-    parser.add_argument("--print", action="store_true", help="if you\
-                        don't want to connect to any database server, this\
-                        option will make the code just print the SQL query on\
-                        the screen, then you do whatever you want with it.")
+    parser.add_argument("--print", action="store_true", help="If you don't\
+                        want to connect to any database server, this option\
+                        will make the code print the SQL query on the screen.\
+                        You can then use it as you wish.")
 
     parser.add_argument("csv_files", type=str, nargs="+", help="List of `.csv`\
                         files that you want to use to generate the SQL query.")
@@ -160,7 +160,7 @@ def get_sql_slices(file_path: str, dlmtr: str = ","):
     return (header_sql_slice, values_sql_slice)
 
 
-def get_query_string(file_path: str, dlmtr: str = ",") -> str:
+def get_insert_query(file_path: str, dlmtr: str = ",") -> str:
     r"""Open the specified file to format a SQL statement that inserts every
     row values on the `.csv` file into the table that has the same name of the
     `.csv` file. Also, it checks for erros when opening the file, if something
@@ -188,15 +188,48 @@ def get_query_string(file_path: str, dlmtr: str = ",") -> str:
                                         values_sql_slice)
 
 
+#todo: check for typos
+def connect_and_send(host: str, port: int, user: str, password: str,
+                     db_name: str, insert_query: str) -> None:
+    r"""This is the most important function, by default, it uses the database
+    auth information given in the command line arguments to connect to a
+    PostgreSQL database and send that query. If you want that script to works
+    on differents databases, maybe you would like to edit the source code
+    for that, and that's the function that you're loking for.
+    
+    + **host**: Hostname of your database server;
+    + **port**: Port for the connection to your database server;
+    + **user**: Username to access the database tables;
+    + **password**: Password of your database user;
+    + **db_name**: The database this script should access once it's connected;
+    + **insert_query**: Query that this code generates by reading a `.csv`
+                        file.
+    """
+    import psycopg2
+
+    with psycopg2.connect(host=host, port=port, user=user, password=password,
+                          dbname=db_name) as conn:
+        with conn.cursor() as cur:
+            cur.execute(insert_query)
+
+
+
 def main(args: list[str]) -> None:
     parsed_args = parse_arguments(args)
 
     for file_path in parsed_args.csv_files:
-        query_string = get_query_string(file_path)
+        insert_query = get_insert_query(file_path)
 
         if parsed_args.print:
-            print(query_string)
+            print(insert_query)
             break
+
+        Cli.show("[b]info:[/] configured to send query to a database")
+        Cli.show("[y]warning:[/] don't forget to set the connection info")
+
+        connect_and_send(parsed_args.host, parsed_args.port, parsed_args.user,
+                         parsed_args.password, parsed_args.db_name,
+                         insert_query)
 
 
 if __name__ == "__main__":
