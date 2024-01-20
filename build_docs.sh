@@ -1,9 +1,13 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-SRC="csv_to_sql/"
+MODULE="csv_to_sql/"
+README="README.md"
+REGEX='^ *<!-- *{{ *PYDOC_MARKDOWN *}} *--> *$'
 
-echo "warning: you need to has the pydoc-markdown library installed for that"
-echo "         ---> python3 -m pip install pydoc-markdown"
+cp "${README}" "${README}.temp"
+
+awk "1; /${REGEX}/ { exit; }" "${README}.temp" > "${README}"
+rm "${README}.temp"
 
 pydoc-markdown -p "${SRC}" -I $(pwd) |
-	sed '/^ *# *.*$/d;/^<a *.*$/d;/./,$!d' > README.md
+	sed '/^ *# *.*$/d;/^<a *.*$/d;/./,$!d' >> "${README}"
