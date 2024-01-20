@@ -59,6 +59,18 @@ def parse_arguments(args: list[str]) -> Namespace:
 
 
 #todo: check for typos
+def join_list_format_sql(data: list[str]) -> str:
+    r"""Utility function that joins every instance of a list with a `, `
+    character, and put that string betwenn `()`. Creating a string that is
+    compatible with SQL syntax, you can use it to select columns in a table or
+    to list values for each column.
+    
+    + **data**: List of strings that will be joined together.
+    """
+    return "(" + ", ".join(data) + ")"
+
+
+#todo: check for typos
 def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     r"""Open the specified file to format a SQL statement that inserts every
     row vlues on the `.csv` file into the table that has the same name of the
@@ -74,7 +86,8 @@ def get_query_string(file_path: str, dlmtr: str = ",") -> str:
             file_reader = csv.reader(file, delimiter=dlmtr)
             header_data = next(file_reader)
 
-            Cli.show(f"[g]log:[/] {header_data}")
+            header_sql_slice = join_list_format_sql(header_data)
+            Cli.show(f"[g]log:[/] {header_sql_slice}")
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
