@@ -38,17 +38,60 @@ easily accessible with the `parsed_args.option` notation.
 
 
 ```python
-def get_csv_file_reader(file_path: str,
-                        dlmtr: str = ",") -> Iterator[list[str]]
+def join_list_format_sql(data: list[str]) -> str
 ```
 
-Try to open an `.csv` file, if this file doesn't exist or has an
-invalid path string, it will halt the whole program and show the error
-message with some additional information about that. If it doesn't halt, it
-will just return the `csv.reader/1` iterator from the `csv` default
-library.
+Utility function that joins every instance of a list with a `, `
+character, and put that string between `()`. Creating a string that is
+compatible with SQL syntax, you can use it to select columns in a table or
+to list values for each column.
+
++ **data**: List of strings that will be joined together.
+
+
+
+```python
+def escape_sql_characters(sql_str: str) -> str
+```
+
+Given a string, it will put a `\` character for each character that
+could cause some trouble in you SQL string. It's important if an user is
+called `Claire O’Connell` for an example, the `'` cound couse some syntax
+error -- also, it's important to avoid SQL injection.
+
++ **sql_str**: The string that you want to escape the characters;
+
+
+
+```python
+def format_sql_row(row: list[str]) -> list[str]
+```
+
+The most complicated function, this function creates a list with
+strings that is compatible with SQL syntax. For an example: it replaces a
+"Foo" string for "E'Foo'" -- with special characters escaped -- and a "1"
+string to just "1". Maybe you'll need to check the test cases or the source
+code in order to understand that function well...
+
++ **row**: Is the list of strings that you want to format to be compatible
+           with SQL syntax.
+
+> [!NOTE]
+> For an example: If you give an `["52", "Rice", "20.7", "TRUE"]` list, it
+> will return a list that looks like `["52", "E'Rice'", "20.7", "TRUE"]`
+
+
+
+```python
+def get_query_string(file_path: str, dlmtr: str = ",") -> str
+```
+
+Open the specified file to format a SQL statement that inserts every
+row values on the `.csv` file into the table that has the same name of the
+`.csv` file. Also, it checks for erros when opening the file, if something
+goes wrong, it will exit the script with status 1.
 
 + **file_path**: Path string to access the file contents;
 + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
-             your file is formated in a different way.
+             your file is formatted in a different way.
 
