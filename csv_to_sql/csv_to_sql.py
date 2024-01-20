@@ -41,11 +41,11 @@ def parse_arguments(args: list[str]) -> Namespace:
     """
     parser = ArgumentParser(description="Simple Python script that reades a\
                             `.csv` file and generates a SQL statement that\
-                            creates a table with the same name and fill all\
-                            rows with the file contents. Also, if you're using\
-                            a PostgreSQL database, this command line tool\
-                            allows you to connect to that database and execute\
-                            the generated SQL database")
+                            selects a table with the same name as the file and\
+                            fill all rows with the file contents. Also, if\
+                            you're using a PostgreSQL database, this command\
+                            line tool allows you to connect to that database\
+                            and execute the generated SQL database")
 
     parser.add_argument("csv_files", type=str, nargs="+", help="List of `.csv`\
                         files that you wanna use to generate the SQL query.")
