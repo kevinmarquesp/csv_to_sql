@@ -180,8 +180,7 @@ def get_insert_query(file_path: str, dlmtr: str = ",") -> str:
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
-        Cli.show(f"[y]{err}[/]")
-
+        Cli.show(f"[r]{err}[/]")
         exit(1)
 
     return insert_query_template.format(table_name, header_sql_slice,
@@ -207,10 +206,16 @@ def connect_and_send(host: str, port: int, user: str, password: str,
     """
     import psycopg2
 
-    with psycopg2.connect(host=host, port=port, user=user, password=password,
-                          dbname=db_name) as conn:
-        with conn.cursor() as cur:
-            cur.execute(insert_query)
+    try:
+        with psycopg2.connect(host=host, port=port, user=user,
+                              password=password, dbname=db_name) as conn:
+            with conn.cursor() as cur:
+                cur.execute(insert_query)
+
+    except Exception as err:
+        Cli.show(f"[r]error:[/] could not connect to the specifyed database...")
+        Cli.show(f"[r]{err}[/]")
+        exit(1)
 
 
 
