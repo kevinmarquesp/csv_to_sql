@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from sys import argv
 from argparse import Namespace, ArgumentParser
 import csv
@@ -93,12 +94,12 @@ def format_sql_row(row: list[str]) -> list[str]:
     string to just "1". Maybe you'll need to check the test cases or the source
     code in order to understand that function well...
 
-    + **row**: Is the list of strings that you want to format to be compatible
-               with SQL syntax.
-
     > [!NOTE]
     > For an example: If you give an `["52", "Rice", "20.7", "TRUE"]` list, it
     > will return a list that looks like `["52", "E'Rice'", "20.7", "TRUE"]`
+
+    + **row**: Is the list of strings that you want to format to be compatible
+               with SQL syntax.
     """
     row = row[:]  #uses a copy of the original list
 
@@ -115,6 +116,30 @@ def format_sql_row(row: list[str]) -> list[str]:
     return row
 
 
+def get_sql_slices(file_path: str, dlmtr: str = ","):
+    r"""Utility function that opens the file and parses the header and column
+    values string slices that are compatible with the SQL syntax.
+    + **file_path**: Path string to access the file contents;
+    + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
+                 your file is formatted in a different way.
+    """
+    with open(file_path, "r", newline="") as file:
+        file_reader = csv.reader(file, delimiter=dlmtr)
+
+        header_data = next(file_reader)
+        header_sql_slice = join_list_format_sql(header_data)
+        values_sql_slices_list = []
+
+        for row in file_reader:
+            row_formated = format_sql_row(row)
+            row_sql_slice = join_list_format_sql(row_formated)
+            values_sql_slices_list.append(row_sql_slice)
+
+        values_sql_slice = ', '.join(values_sql_slices_list)
+
+    return (header_sql_slice, values_sql_slice)
+
+
 def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     r"""Open the specified file to format a SQL statement that inserts every
     row values on the `.csv` file into the table that has the same name of the
@@ -125,16 +150,13 @@ def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
                  your file is formatted in a different way.
     """
+    insert_query_template = "INSERT INTO {0} {1} VALUES {2};"
+
     try:
-        with open(file_path, "r", newline="") as file:
-            file_reader = csv.reader(file, delimiter=dlmtr)
+        base_name = os.path.basename(file_path)
+        table_name = os.path.splitext(base_name)[0]  #remove the file extention
 
-            header_data = next(file_reader)
-            header_sql_slice = join_list_format_sql(header_data)
-
-            for row in file_reader:
-                row_formated = format_sql_row(row)
-                Cli.show(f"[g]log:[/] {row_formated}")
+        header_sql_slice, values_sql_slice = get_sql_slices(file_path, dlmtr)
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
@@ -142,7 +164,8 @@ def get_query_string(file_path: str, dlmtr: str = ",") -> str:
 
         exit(1)
 
-    return "SELECT VERSION();"
+    return insert_query_template.format(table_name, header_sql_slice,
+                                        values_sql_slice)
 
 
 def main(args: list[str]) -> None:
