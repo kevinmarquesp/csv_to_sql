@@ -2,11 +2,17 @@
 
 from sys import argv
 from argparse import Namespace, ArgumentParser
+import csv
+from typing import Iterator
+
+## IDEA: let the user choose the delimeter character for the csv files
 
 ## TODO: the arguments can not handle the db connection yet
 ## TODO: fix the typos for the `parse_arguments/1` function docstring
 ## TODO: fix the typos for the `Cli.show/1` function docstring
 ## TODO: fix the typos for the `Cli` class docstring
+## TODO: fix the typos for the `get_csv_file_reader/1` function docstring
+## TODO: add the documentation for the arguments too
 
 
 class Cli:
@@ -53,12 +59,31 @@ def parse_arguments(args: list[str]) -> Namespace:
     return parser.parse_args(args)
 
 
-def main(args: list[str]) -> None:
-    # parsed_args = parse_arguments(args)
-    # print(parsed_args)
+def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> Iterator[list[str]]:
+    """Try to open an `.csv` file, it this file doesn't exists or has an
+    invalid path string, it will halt the whole program and show the error
+    message with some adition information about that. If it not halts, it will
+    just return the `csv.reader/1` iterator from the `csv` default library.
+    + **file_path**: Path string to access the file contents;
+    + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
+                 your file is formated in a different way.
+    """
+    try:
+        with open(file_path, "r", newline="") as file:
+            return csv.reader(file, delimiter=dlmtr)
 
-    Cli.show("[r]error:[/] something went wrong...")
-    Cli.show("[g]success:[/] good job!")
+    except Exception as err:
+        Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specifyed")
+        Cli.show(f"[y]{err}[/]")
+        exit(1)
+
+
+def main(args: list[str]) -> None:
+    parsed_args = parse_arguments(args)
+
+    for file_path in parsed_args.csv_files:
+        file_reader = get_csv_file_reader(file_path)
+        print(file_reader)
 
 
 if __name__ == "__main__":
