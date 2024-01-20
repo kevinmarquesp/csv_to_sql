@@ -71,6 +71,35 @@ def join_list_format_sql(data: list[str]) -> str:
 
 
 #todo: check for typos
+def format_sql_row(row: list[str]) -> list[str]:
+    """The most complicated function, this function creates a list with strings
+    that is compatible with SQL syntax. For an example: it replaces a "Foo"
+    string for "E'Foo'" -- with special characters escaped -- and a "1" string
+    to just "1". Maybe you'll need to check the test cases or the source code
+    in order to understand that function well...
+
+    + **row**: Is the list of strings that you want to format to be comptible
+               with SQL syntax.
+
+    > [!INFO]
+    > For an example: If you give an `["52", "Rice", "20.7", "TRUE"]` list, it
+    > will return a list that looks like `["52", "E'Rice'", "20.7", "TRUE"]`
+    """
+    row = row[:]  #uses a copy of the original list
+
+    for key, value in enumerate(row):
+        is_numeric = value.replace(".", "")\
+                          .replace(",", "")\
+                          .replace("-", "")\
+                          .isnumeric()
+
+        if not (is_numeric or value.lower() in ("true", "false", "null")):
+            row[key] = f"E'{value}'"
+
+    return row
+
+
+#todo: check for typos
 def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     r"""Open the specified file to format a SQL statement that inserts every
     row vlues on the `.csv` file into the table that has the same name of the
@@ -84,10 +113,13 @@ def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     try:
         with open(file_path, "r", newline="") as file:
             file_reader = csv.reader(file, delimiter=dlmtr)
-            header_data = next(file_reader)
 
+            header_data = next(file_reader)
             header_sql_slice = join_list_format_sql(header_data)
-            Cli.show(f"[g]log:[/] {header_sql_slice}")
+
+            for row in file_reader:
+                row_formated = format_sql_row(row)
+                Cli.show(f"[g]log:[/] {row_formated}")
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
