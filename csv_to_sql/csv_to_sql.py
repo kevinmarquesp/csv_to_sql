@@ -5,9 +5,6 @@ from argparse import Namespace, ArgumentParser
 import csv
 from typing import Iterator
 
-## IDEA: let the user choose the delimeter character for the csv files
-## TODO: the arguments can not handle the db connection yet
-
 CsvReader = Iterator[list[str]]
 
 
@@ -61,33 +58,39 @@ def parse_arguments(args: list[str]) -> Namespace:
     return parser.parse_args(args)
 
 
-def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> CsvReader:
-    r"""Try to open an `.csv` file, if this file doesn't exist or has an
-    invalid path string, it will halt the whole program and show the error
-    message with some additional information about that. If it doesn't halt, it
-    will just return the `csv.reader/1` iterator from the `csv` default
-    library.
+#todo: check for typos
+def get_query_string(file_path: str, dlmtr: str = ",") -> str:
+    r"""Open the specified file to format a SQL statement that inserts every
+    row vlues on the `.csv` file into the table that has the same name of the
+    `.csv` file. Also, it checks for erros when opening the file, if something
+    wen wrong, it will exit the script with status 1.
 
-    + **file_path**: Path string to access the file contents;
+    + **file_path**: Path string to acess the file contents;
     + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
                  your file is formated in a different way.
     """
     try:
         with open(file_path, "r", newline="") as file:
-            return csv.reader(file, delimiter=dlmtr)
+            file_reader = csv.reader(file, delimiter=dlmtr)
+            header_data = next(file_reader)
+
+            Cli.show(f"[g]log:[/] {header_data}")
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
         Cli.show(f"[y]{err}[/]")
+
         exit(1)
+
+    return "SELECT VERSION();"
 
 
 def main(args: list[str]) -> None:
     parsed_args = parse_arguments(args)
 
     for file_path in parsed_args.csv_files:
-        file_reader = get_csv_file_reader(file_path)
-        print(file_reader)
+        query_string = get_query_string(file_path)
+        print(query_string)
 
 
 if __name__ == "__main__":
