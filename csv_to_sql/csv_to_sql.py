@@ -71,12 +71,33 @@ def join_list_format_sql(data: list[str]) -> str:
 
 
 #todo: check for typos
+def escape_sql_characters(sql_str: str) -> str:
+    r"""Given an string, it will put a `\` character for each character that
+    cound couse some trouble on you SQL string. It's important if an user is
+    called `Claire O’Connell` for an example, the `'` cound couse some syntax
+    error -- also, it's important to avoid SQL injection.
+
+    + **sql_str**: The string that you want to escape the characters;
+    """
+    ESCAPE_CHARS = ("'", '"', "\\", "%", "_", "/")
+    escpaed_str = ""
+
+    for char in sql_str:
+        if char in ESCAPE_CHARS:
+            escpaed_str += f"\\{char}"
+        else:
+            escpaed_str += char
+
+    return escpaed_str
+
+
+#todo: check for typos
 def format_sql_row(row: list[str]) -> list[str]:
-    """The most complicated function, this function creates a list with strings
-    that is compatible with SQL syntax. For an example: it replaces a "Foo"
-    string for "E'Foo'" -- with special characters escaped -- and a "1" string
-    to just "1". Maybe you'll need to check the test cases or the source code
-    in order to understand that function well...
+    r"""The most complicated function, this function creates a list with
+    strings that is compatible with SQL syntax. For an example: it replaces a
+    "Foo" string for "E'Foo'" -- with special characters escaped -- and a "1"
+    string to just "1". Maybe you'll need to check the test cases or the source
+    code in order to understand that function well...
 
     + **row**: Is the list of strings that you want to format to be comptible
                with SQL syntax.
@@ -92,9 +113,12 @@ def format_sql_row(row: list[str]) -> list[str]:
                           .replace(",", "")\
                           .replace("-", "")\
                           .isnumeric()
+        escaped_value = escape_sql_characters(value)
 
         if not (is_numeric or value.lower() in ("true", "false", "null")):
-            row[key] = f"E'{value}'"
+            row[key] = f"E'{escaped_value}'"
+        else:
+            row[key] = value.upper()
 
     return row
 
