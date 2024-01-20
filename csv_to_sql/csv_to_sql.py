@@ -58,10 +58,9 @@ def parse_arguments(args: list[str]) -> Namespace:
     return parser.parse_args(args)
 
 
-#todo: check for typos
 def join_list_format_sql(data: list[str]) -> str:
     r"""Utility function that joins every instance of a list with a `, `
-    character, and put that string betwenn `()`. Creating a string that is
+    character, and put that string between `()`. Creating a string that is
     compatible with SQL syntax, you can use it to select columns in a table or
     to list values for each column.
     
@@ -70,10 +69,9 @@ def join_list_format_sql(data: list[str]) -> str:
     return "(" + ", ".join(data) + ")"
 
 
-#todo: check for typos
 def escape_sql_characters(sql_str: str) -> str:
-    r"""Given an string, it will put a `\` character for each character that
-    cound couse some trouble on you SQL string. It's important if an user is
+    r"""Given a string, it will put a `\` character for each character that
+    could cause some trouble in you SQL string. It's important if an user is
     called `Claire O’Connell` for an example, the `'` cound couse some syntax
     error -- also, it's important to avoid SQL injection.
 
@@ -91,7 +89,6 @@ def escape_sql_characters(sql_str: str) -> str:
     return escpaed_str
 
 
-#todo: check for typos
 def format_sql_row(row: list[str]) -> list[str]:
     r"""The most complicated function, this function creates a list with
     strings that is compatible with SQL syntax. For an example: it replaces a
@@ -99,10 +96,10 @@ def format_sql_row(row: list[str]) -> list[str]:
     string to just "1". Maybe you'll need to check the test cases or the source
     code in order to understand that function well...
 
-    + **row**: Is the list of strings that you want to format to be comptible
+    + **row**: Is the list of strings that you want to format to be compatible
                with SQL syntax.
 
-    > [!INFO]
+    > [!NOTE]
     > For an example: If you give an `["52", "Rice", "20.7", "TRUE"]` list, it
     > will return a list that looks like `["52", "E'Rice'", "20.7", "TRUE"]`
     """
@@ -123,16 +120,15 @@ def format_sql_row(row: list[str]) -> list[str]:
     return row
 
 
-#todo: check for typos
 def get_query_string(file_path: str, dlmtr: str = ",") -> str:
     r"""Open the specified file to format a SQL statement that inserts every
-    row vlues on the `.csv` file into the table that has the same name of the
+    row values on the `.csv` file into the table that has the same name of the
     `.csv` file. Also, it checks for erros when opening the file, if something
-    wen wrong, it will exit the script with status 1.
+    goes wrong, it will exit the script with status 1.
 
-    + **file_path**: Path string to acess the file contents;
+    + **file_path**: Path string to access the file contents;
     + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
-                 your file is formated in a different way.
+                 your file is formatted in a different way.
     """
     try:
         with open(file_path, "r", newline="") as file:
