@@ -6,33 +6,24 @@ from argparse import Namespace, ArgumentParser
 import csv
 from typing import Iterator
 
-CsvReader = Iterator[list[str]]
+
+COLOR_CODES = {
+    "[b]": "\033[30m", "[r]": "\033[31m", "[g]": "\033[32m",
+    "[y]": "\033[33m", "[b]": "\033[34m", "[m]": "\033[35m",
+    "[c]": "\033[36m", "[w]": "\033[37m", "[/]": "\033[m"
+}
 
 
-class Cli:
-    r"""This `Cli` class means to act like an `namespace` in C, its only
-    purpose is to make this script more organized. This class holds all
-    methods that are related to the command line interface, such as showing
-    information on the screen or interacting with the user...
+def log(msg: str):
+    r"""Simple function that replaces some special characters to their
+    respective color codes, like replacing an `[g]`, which means "green", to
+    `\033[32m` of the string, then printing it on the screen.
+
+    + **msg**: The message that you want to show on the terminal output.
     """
-    clr_codes = {
-        "[b]": "\033[30m", "[r]": "\033[31m", "[g]": "\033[32m",
-        "[y]": "\033[33m", "[b]": "\033[34m", "[m]": "\033[35m",
-        "[c]": "\033[36m", "[w]": "\033[37m", "[/]": "\033[m"
-    }
-
-    @staticmethod
-    def show(msg: str):
-        r"""Simple function that replaces some special characters to their
-        respective color codes, like replacing an `[g]`, which means "green",
-        to `\033[32m` of the string, then printing it on the screen.
-
-        + **msg**: The message that you want to show on the terminal output.
-        """
-        for key, value in Cli.clr_codes.items():
-            msg = msg.replace(key, value)
-        print(msg)
-        
+    for key, value in COLOR_CODES.items():
+        msg = msg.replace(key, value)
+    print(msg)
 
 
 def parse_arguments(args: list[str]) -> Namespace:
@@ -178,8 +169,8 @@ def get_insert_query(file_path: str, dlmtr: str = ",") -> str:
         header_sql_slice, values_sql_slice = get_sql_slices(file_path, dlmtr)
 
     except Exception as err:
-        Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
-        Cli.show(f"[y]{err}[/]")
+        log(f"[r]error:[/] couldn't open the [c]{file_path}[/] file")
+        log(f"[y]{err}[/]")
         exit(1)
 
     return insert_query_template.format(table_name, header_sql_slice,
@@ -212,8 +203,8 @@ def connect_and_send(host: str, port: int, user: str, password: str,
                 cur.execute(insert_query)
 
     except Exception as err:
-        Cli.show(f"[r]error:[/] could not connect to the specifyed database...")
-        Cli.show(f"[y]{err}[/]")
+        log(f"[r]error:[/] could not connect to the specifyed database...")
+        log(f"[y]{err}[/]")
         exit(1)
 
 
@@ -222,7 +213,7 @@ def main(args: list[str]) -> None:
     parsed_args = parse_arguments(args)
 
     for file_path in parsed_args.csv_files:
-        Cli.show(f"[b]info:[/] dealing with [c]{file_path}[/]")
+        log(f"[b]info:[/] dealing with [c]{file_path}[/]")
 
         insert_query = get_insert_query(file_path)
 
@@ -230,13 +221,13 @@ def main(args: list[str]) -> None:
             print(insert_query)
             break
 
-        Cli.show("[b]info:[/] configured to send query to a database")
+        log("[b]info:[/] configured to send query to a database")
 
         connect_and_send(parsed_args.host, parsed_args.port, parsed_args.user,
                          parsed_args.password, parsed_args.db_name,
                          insert_query)
 
-        Cli.show('[g]done[/]')
+        log('[g]done[/]')
 
 
 if __name__ == "__main__":
