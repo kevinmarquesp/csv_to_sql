@@ -1,22 +1,10 @@
 ```python
-class Cli()
-```
-
-This `Cli` class means to act like an `namespace` in C, its only
-purpose is to make this script more organized. This class holds all
-methods that are related to the command line interface, such as showing
-information on the screen or interacting with the user...
-
-
-
-```python
-@staticmethod
-def show(msg: str)
+def log(msg: str)
 ```
 
 Simple function that replaces some special characters to their
-respective color codes, like replacing an `[g]`, which means "green",
-to `\033[32m` of the string, then printing it on the screen.
+respective color codes, like replacing an `[g]`, which means "green", to
+`\033[32m` of the string, then printing it on the screen.
 
 + **msg**: The message that you want to show on the terminal output.
 
@@ -73,17 +61,29 @@ strings that is compatible with SQL syntax. For an example: it replaces a
 string to just "1". Maybe you'll need to check the test cases or the source
 code in order to understand that function well...
 
-+ **row**: Is the list of strings that you want to format to be compatible
-           with SQL syntax.
-
 > [!NOTE]
 > For an example: If you give an `["52", "Rice", "20.7", "TRUE"]` list, it
 > will return a list that looks like `["52", "E'Rice'", "20.7", "TRUE"]`
 
++ **row**: Is the list of strings that you want to format to be compatible
+           with SQL syntax.
+
 
 
 ```python
-def get_query_string(file_path: str, dlmtr: str = ",") -> str
+def get_sql_slices(file_path: str, dlmtr: str = ",")
+```
+
+Utility function that opens the file and parses the header and column
+values string slices that are compatible with the SQL syntax.
++ **file_path**: Path string to access the file contents;
++ **dlmtr**: This is `,` by default, but you can set a custom delimiter if
+             your file is formatted in a different way.
+
+
+
+```python
+def get_insert_query(file_path: str, dlmtr: str = ",") -> str
 ```
 
 Open the specified file to format a SQL statement that inserts every
@@ -94,4 +94,44 @@ goes wrong, it will exit the script with status 1.
 + **file_path**: Path string to access the file contents;
 + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
              your file is formatted in a different way.
+
+
+
+```python
+def connect_and_send(host: str, port: int, user: str, password: str,
+                     db_name: str, insert_query: str) -> None
+```
+
+This is the most important function. By default, it uses the database
+authentication information provided in the command line arguments to
+connect to a PostgreSQL database and send that query. If you want this
+script to work with different databases, maybe you would like to edit the
+source code for that, and that's the function that you're looking for.
+
++ **host**: Hostname of your database server;
++ **port**: Port for the connection to your database server;
++ **user**: Username to access the database tables;
++ **password**: Password of your database user;
++ **db_name**: The database this script should access once it's connected;
++ **insert_query**: Query that this code generates by reading a `.csv`
+                    file.
+
+
+
+```python
+def main(args: list[str]) -> None
+```
+
+Main function that parses command line arguments, logs information,
+generates SQL insert queries from CSV files, and sends them to a database.
+The function works as follows:
+
+1. Parses the command line arguments;
+1. Iterates over each CSV file path in the parsed arguments;
+1. Generates an SQL insert query for the current CSV file;
+1. If the `print` flag is set in the parsed arguments, it prints the insert
+   query and breaks the loop; and
+1. Connects to the database and sends the insert query.
+
++ **args**: List of command line arguments.
 
