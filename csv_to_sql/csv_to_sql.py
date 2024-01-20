@@ -186,18 +186,10 @@ def connect_and_send(host: str, port: int, user: str, password: str,
     + **insert_query**: Query that this code generates by reading a `.csv`
                         file.
     """
-    import psycopg2
-
-    try:
-        with psycopg2.connect(host=host, port=port, user=user,
-                              password=password, dbname=db_name) as conn:
-            with conn.cursor() as cur:
-                cur.execute(insert_query)
-
-    except Exception as err:
-        log(f"[r]error:[/] could not connect to the specifyed database...")
-        log(f"[y]{err}[/]")
-        exit(1)
+    log("[m]nuh uh:[/] you need to edit the source code of this function")
+    log("        ([c]connect_and_send[/]) to have integration with")
+    log("        an database server...")
+    exit(0)
 
 
 def main(args: list[str]) -> None:
