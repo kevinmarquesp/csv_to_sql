@@ -81,10 +81,7 @@ def escape_sql_characters(sql_str: str) -> str:
     escpaed_str = ""
 
     for char in sql_str:
-        if char in ESCAPE_CHARS:
-            escpaed_str += f"\\{char}"
-        else:
-            escpaed_str += char
+        escpaed_str += char if char not in ESCAPE_CHARS else f"\\{char}"
 
     return escpaed_str
 
@@ -106,16 +103,14 @@ def format_sql_row(row: list[str]) -> list[str]:
     row = row[:]  #uses a copy of the original list
 
     for key, value in enumerate(row):
-        is_numeric = value.replace(".", "")\
-                          .replace(",", "")\
-                          .replace("-", "")\
+        is_numeric = value.replace(".", "").replace(",", "").replace("-", "")\
                           .isnumeric()
         escaped_value = escape_sql_characters(value)
 
-        if not (is_numeric or value.lower() in ("true", "false", "null")):
-            row[key] = f"E'{escaped_value}'"
-        else:
+        if is_numeric or value.lower() in ("true", "false", "null"):
             row[key] = value.upper()
+        else:
+            row[key] = f"E'{escaped_value}'"
 
     return row
 
