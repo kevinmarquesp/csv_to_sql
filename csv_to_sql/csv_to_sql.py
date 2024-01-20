@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-from sys import argv
 from argparse import Namespace, ArgumentParser
 import csv
-from typing import Iterator
+import os
+from sys import argv
 
 
 COLOR_CODES = {
@@ -46,24 +45,18 @@ def parse_arguments(args: list[str]) -> Namespace:
 
     parser.add_argument("--host", "-H", type=str, help="Hostname of your\
                         database server.")
-
     parser.add_argument("--port", "-p", type=str, help="Port for the\
                         connection to your database server.")
-
     parser.add_argument("--user", "-u", type=str, help="Username to access\
                         the database tables.")
-
     parser.add_argument("--password", "-P", type=str, help="Password of your\
                         database user.")
-
     parser.add_argument("--db-name", "-d", type=str, help="The database\
                         this script should access once it's connected.")
-    
     parser.add_argument("--print", action="store_true", help="If you don't\
                         want to connect to any database server, this option\
                         will make the code print the SQL query on the screen.\
                         You can then use it as you wish.")
-
     parser.add_argument("csv_files", type=str, nargs="+", help="List of `.csv`\
                         files that you want to use to generate the SQL query.")
 
@@ -177,14 +170,13 @@ def get_insert_query(file_path: str, dlmtr: str = ",") -> str:
                                         values_sql_slice)
 
 
-#todo: check for typos
 def connect_and_send(host: str, port: int, user: str, password: str,
                      db_name: str, insert_query: str) -> None:
-    r"""This is the most important function, by default, it uses the database
-    auth information given in the command line arguments to connect to a
-    PostgreSQL database and send that query. If you want that script to works
-    on differents databases, maybe you would like to edit the source code
-    for that, and that's the function that you're loking for.
+    r"""This is the most important function. By default, it uses the database
+    authentication information provided in the command line arguments to
+    connect to a PostgreSQL database and send that query. If you want this
+    script to work with different databases, maybe you would like to edit the
+    source code for that, and that's the function that you're looking for.
     
     + **host**: Hostname of your database server;
     + **port**: Port for the connection to your database server;
