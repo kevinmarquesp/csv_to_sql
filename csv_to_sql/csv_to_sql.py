@@ -124,8 +124,7 @@ def format_sql_row(row: list[str]) -> list[str]:
     row = row[:]  #uses a copy of the original list
 
     for key, value in enumerate(row):
-        is_numeric = value.replace(".", "").replace(",", "").replace("-", "")\
-                          .isnumeric()
+        is_numeric = value.replace(".", "").replace(",", "").isnumeric()
         escaped_value = escape_sql_characters(value)
 
         if is_numeric or value.lower() in ("true", "false", "null"):
