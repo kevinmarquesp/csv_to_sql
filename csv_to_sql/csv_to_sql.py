@@ -6,19 +6,13 @@ import csv
 from typing import Iterator
 
 ## IDEA: let the user choose the delimeter character for the csv files
-
 ## TODO: the arguments can not handle the db connection yet
-## TODO: fix the typos for the `parse_arguments/1` function docstring
-## TODO: fix the typos for the `Cli.show/1` function docstring
-## TODO: fix the typos for the `Cli` class docstring
-## TODO: fix the typos for the `get_csv_file_reader/1` function docstring
-## TODO: add the documentation for the arguments too
 
 
 class Cli:
     """This `Cli` class means to act like an `namespace` in C, its only
-    propurse is to make this script more organized. This class holds all
-    methods that is related to the command line interface, such as showing
+    purpose is to make this script more organized. This class holds all
+    methods that are related to the command line interface, such as showing
     information on the screen or interacting with the user...
     """
     clr_codes = {
@@ -32,6 +26,8 @@ class Cli:
         """Simple function that replaces some special characters to their
         respective color codes, like replacing an `[g]`, which means "green",
         to `\033[32m` of the string, then printing it on the screen.
+
+        + **msg**: The message that you want to show on the terminal output.
         """
         for key, value in Cli.clr_codes.items():
             msg = msg.replace(key, value)
@@ -41,29 +37,35 @@ class Cli:
 
 def parse_arguments(args: list[str]) -> Namespace:
     """Given an list of arguments -- e.g. `['argument', '-o', '--option',
-    'opttion_value']` -- this function puts everything toguether and return a
+    'optton_value']` -- this function puts everything together and returns a
     `Namespace` object with all that arguments parsed to Python's types and
-    easily accecible with the `parsed_args.option` notation.
+    easily accessible with the `parsed_args.option` notation.
+
+    + **args**: List of arguments that the user has specified, maybe you would
+                like to use it with the `sys.argv` list to access the command
+                line arguments.
     """
-    parser = ArgumentParser(description="Simple Python script that reades a\
+    parser = ArgumentParser(description="Simple Python script that reads a\
                             `.csv` file and generates a SQL statement that\
                             selects a table with the same name as the file and\
-                            fill all rows with the file contents. Also, if\
+                            fills all rows with the file contents. Also, if\
                             you're using a PostgreSQL database, this command\
                             line tool allows you to connect to that database\
-                            and execute the generated SQL database")
+                            and execute the generated SQL statement")
 
     parser.add_argument("csv_files", type=str, nargs="+", help="List of `.csv`\
-                        files that you wanna use to generate the SQL query.")
+                        files that you want to use to generate the SQL query.")
 
     return parser.parse_args(args)
 
 
 def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> Iterator[list[str]]:
-    """Try to open an `.csv` file, it this file doesn't exists or has an
+    """Try to open an `.csv` file, if this file doesn't exist or has an
     invalid path string, it will halt the whole program and show the error
-    message with some adition information about that. If it not halts, it will
-    just return the `csv.reader/1` iterator from the `csv` default library.
+    message with some additional information about that. If it doesn't halt, it
+    will just return the `csv.reader/1` iterator from the `csv` default
+    library.
+
     + **file_path**: Path string to access the file contents;
     + **dlmtr**: This is `,` by default, but you can set a custom delimiter if
                  your file is formated in a different way.
@@ -73,7 +75,7 @@ def get_csv_file_reader(file_path: str, dlmtr: str = ",") -> Iterator[list[str]]
             return csv.reader(file, delimiter=dlmtr)
 
     except Exception as err:
-        Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specifyed")
+        Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
         Cli.show(f"[y]{err}[/]")
         exit(1)
 
