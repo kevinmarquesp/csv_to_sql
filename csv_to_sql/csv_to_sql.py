@@ -179,7 +179,7 @@ def get_insert_query(file_path: str, dlmtr: str = ",") -> str:
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not open the [c]{file_path}[/] file specified")
-        Cli.show(f"[r]{err}[/]")
+        Cli.show(f"[y]{err}[/]")
         exit(1)
 
     return insert_query_template.format(table_name, header_sql_slice,
@@ -213,7 +213,7 @@ def connect_and_send(host: str, port: int, user: str, password: str,
 
     except Exception as err:
         Cli.show(f"[r]error:[/] could not connect to the specifyed database...")
-        Cli.show(f"[r]{err}[/]")
+        Cli.show(f"[y]{err}[/]")
         exit(1)
 
 
@@ -222,6 +222,8 @@ def main(args: list[str]) -> None:
     parsed_args = parse_arguments(args)
 
     for file_path in parsed_args.csv_files:
+        Cli.show(f"[b]info:[/] dealing with [c]{file_path}[/]")
+
         insert_query = get_insert_query(file_path)
 
         if parsed_args.print:
@@ -229,11 +231,12 @@ def main(args: list[str]) -> None:
             break
 
         Cli.show("[b]info:[/] configured to send query to a database")
-        Cli.show("[y]warning:[/] don't forget to set the connection info")
 
         connect_and_send(parsed_args.host, parsed_args.port, parsed_args.user,
                          parsed_args.password, parsed_args.db_name,
                          insert_query)
+
+        Cli.show('[g]done[/]')
 
 
 if __name__ == "__main__":
