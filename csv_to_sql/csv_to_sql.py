@@ -200,8 +200,20 @@ def connect_and_send(host: str, port: int, user: str, password: str,
         exit(1)
 
 
-
 def main(args: list[str]) -> None:
+    r"""Main function that parses command line arguments, logs information, 
+    generates SQL insert queries from CSV files, and sends them to a database.
+    The function works as follows:
+
+    1. Parses the command line arguments;
+    1. Iterates over each CSV file path in the parsed arguments;
+    1. Generates an SQL insert query for the current CSV file;
+    1. If the `print` flag is set in the parsed arguments, it prints the insert
+       query and breaks the loop; and
+    1. Connects to the database and sends the insert query.
+    
+    + **args**: List of command line arguments.
+    """
     parsed_args = parse_arguments(args)
 
     for file_path in parsed_args.csv_files:
