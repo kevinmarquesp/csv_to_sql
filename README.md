@@ -5,6 +5,8 @@ I was studying SQL and I needed to pass an example CSV file to my database in or
 
 The thing that I was studying with this project is to find a good and simple Python project structure that is easy to use/install and test. This happens to be a really simple command line tool, so it's better to hold the entire code base in a single file, so the user could just copy that source code and use it as an app -- the challenge was to make a testable command line tool that doesn't require installing any libraries, just using what Python already offers me by default.
 
+https://github.com/kevinmarquesp/csv_to_sql/assets/71402116/58e99629-bd08-4d5c-be08-d62f3f684db0
+
 ## Installation Process
 As I said, the important file is the `csv_to_sql/csv_to_sql.py` file, so the way to go is just copy and paste the contents of this file in somewhere on your `$PATH`. You can just select the text from your browser, open your text editor and paste its contents, or you can just follow the steps below:
 ```bash
